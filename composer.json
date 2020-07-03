@@ -1,4 +1,8 @@
 {
+    "name": "accolon/redis",
+    "description": "library manage redis with php",
+    "license": "MIT",
+    "type": "library",
     "require": {},
     "autoload": {
         "psr-4": {
