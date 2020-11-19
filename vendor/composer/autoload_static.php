@@ -4,11 +4,11 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3
+class ComposerStaticInitd2e588f3ca7f7bcee51515dfa81b2dcf
 {
     public static $files = array (
-        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        'ec07570ca5a812141189b1fa81503674' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert/Functions.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     );
 
@@ -43,9 +43,9 @@ class ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3
     public static $prefixDirsPsr4 = array (
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -74,6 +74,7 @@ class ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'PHPUnit\\Exception' => __DIR__ . '/..' . '/phpunit/phpunit/src/Exception.php',
         'PHPUnit\\Framework\\Assert' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Assert.php',
         'PHPUnit\\Framework\\AssertionFailedError' => __DIR__ . '/..' . '/phpunit/phpunit/src/Framework/Exception/AssertionFailedError.php',
@@ -753,9 +754,9 @@ class ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita46711c16a70ae5fe0bd62ecb3c232b3::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitd2e588f3ca7f7bcee51515dfa81b2dcf::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitd2e588f3ca7f7bcee51515dfa81b2dcf::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitd2e588f3ca7f7bcee51515dfa81b2dcf::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -4,73 +4,71 @@ namespace Accolon\Redis;
 
 class Redis
 {
-    private static \Redis $redis;
+    private static \Redis $instance;
     private static array $channels = [];
-    private static int $index = 0;
 
-    public static function setConnection(
-        string $password,
+    public static function connect(
         string $host = "localhost",
         int $port = 6379,
+        ?string $password = null,
         float $timeout = 1,
         int $delay = 100
-    )
-    {
-        self::$redis = new \Redis();
-        self::$redis->connect(
-            $host,
-            $port,
-            $timeout,
-            null,
-            $delay,
-            0
-        );
-        self::$redis->auth($password);
-        self::config();
+    ) {
+        static::$instance = new \Redis();
+        static::$instance->connect($host, $port, $timeout, null, $delay, 0);
+        if ($password) {
+            static::$instance->auth($password);
+        }
+        static::config();
     }
 
     public static function config(int $db = 0)
     {
-        self::$redis->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_JSON);
-        self::$redis->setOption(\Redis::OPT_PREFIX, "accolon.");
-        self::$redis->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
-        self::$redis->select($db);
+        static::$instance->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_JSON);
+        static::$instance->setOption(\Redis::OPT_PREFIX, "accolon.");
+        static::$instance->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
+        static::setDB($db);
+    }
+
+    public static function setDB(int $db)
+    {
+        static::$instance->select($db);
     }
 
     public static function get($keys)
     {
 
-        return !is_array($keys) ? self::$redis->get($keys) : self::$redis->mGet($keys);
+        return !is_array($keys) ? static::$instance->get($keys) : static::$instance->mGet($keys);
     }
 
     public static function set(string $key, string $value, int $time = 100)
     {
-        return self::$redis->pSetEx($key, $time, $value);
+        return static::$instance->pSetEx($key, $time, $value);
     }
 
     public static function has(string $key)
     {
-        return (bool) self::$redis->exists($key); 
+        return (bool) static::$instance->exists($key);
     }
 
     public static function del($keys)
     {
-        return self::$redis->del($keys);
+        return static::$instance->del($keys);
     }
 
     public static function rename(string $key, string $name)
     {
-        self::$redis->rename($key, $name);
+        static::$instance->rename($key, $name);
     }
 
     public static function allKeys()
     {
-        return self::$redis->keys("*");
+        return static::$instance->keys("*");
     }
 
     public static function getKeys(string $pattern)
     {
-        return self::$redis->keys($pattern);
+        return static::$instance->keys($pattern);
     }
 
     private static function removePrefix(string $key)
@@ -80,26 +78,27 @@ class Redis
 
     public static function forEach(string $pattern, callable $callback)
     {
-        foreach (self::getKeys($pattern) as $key) {
-            $callback(self::get(self::removePrefix($key)));
+        foreach (static::getKeys($pattern) as $key) {
+            $callback(static::get(static::removePrefix($key)));
         }
     }
 
     public static function clear()
     {
-        self::$redis->flushAll();
+        static::$instance->flushAll();
     }
 
     public static function subscribe(array $channels, callable $callback)
     {
         foreach ($channels as $channel) {
-            self::$channels[$channel] = $callback;
+            static::$channels[$channel] = $callback;
         }
     }
 
     public static function publish(string $channel, string $message)
     {
-        self::set($channel . ":" . self::$index, $message);
-        self::forEach($channel . ":*", self::$channels[$channel]);
+        $index = md5(microtime(true));
+        static::set($channel . ":" . $index, $message);
+        static::forEach($channel . ":*", static::$channels[$channel]);
     }
 }
