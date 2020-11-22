@@ -23,7 +23,6 @@ class Redis
 
     public static function config(int $db = 0)
     {
-        static::$instance->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_JSON);
         static::$instance->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
         static::setDB($db);
     }
@@ -36,11 +35,11 @@ class Redis
     public static function get($keys)
     {
         return !is_array($keys)
-                ? json_decode(static::$instance->get($keys))
-                : array_map(fn($data) => json_decode($data), static::$instance->mGet($keys));
+                ? static::$instance->get($keys)
+                : static::$instance->mGet($keys);
     }
 
-    public static function set(string $key, $value)
+    public static function set(string $key, string $value)
     {
         return static::$instance->set($key, $value);
     }
