@@ -5,7 +5,6 @@ namespace Accolon\Redis;
 class Redis
 {
     private static \Redis $instance;
-    private static array $channels = [];
 
     public static function connect(
         string $host = "localhost",
@@ -25,7 +24,6 @@ class Redis
     public static function config(int $db = 0)
     {
         static::$instance->setOption(\Redis::OPT_SERIALIZER, \Redis::SERIALIZER_JSON);
-        static::$instance->setOption(\Redis::OPT_PREFIX, "accolon.");
         static::$instance->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
         static::setDB($db);
     }
@@ -37,13 +35,12 @@ class Redis
 
     public static function get($keys)
     {
-
         return !is_array($keys) ? static::$instance->get($keys) : static::$instance->mGet($keys);
     }
 
-    public static function set(string $key, string $value, int $time = 100)
+    public static function set(string $key, string $value)
     {
-        return static::$instance->pSetEx($key, $time, $value);
+        return static::$instance->set($key, $value);
     }
 
     public static function has(string $key)
@@ -53,7 +50,7 @@ class Redis
 
     public static function del($keys)
     {
-        return static::$instance->del($keys);
+        return static::$instance->unlink($keys);
     }
 
     public static function rename(string $key, string $name)
@@ -71,15 +68,10 @@ class Redis
         return static::$instance->keys($pattern);
     }
 
-    private static function removePrefix(string $key)
-    {
-        return explode(".", $key)[1];
-    }
-
     public static function forEach(string $pattern, callable $callback)
     {
         foreach (static::getKeys($pattern) as $key) {
-            $callback(static::get(static::removePrefix($key)));
+            $callback(static::get($key));
         }
     }
 
@@ -88,17 +80,8 @@ class Redis
         static::$instance->flushAll();
     }
 
-    public static function subscribe(array $channels, callable $callback)
+    public static function save()
     {
-        foreach ($channels as $channel) {
-            static::$channels[$channel] = $callback;
-        }
-    }
-
-    public static function publish(string $channel, string $message)
-    {
-        $index = md5(microtime(true));
-        static::set($channel . ":" . $index, $message);
-        static::forEach($channel . ":*", static::$channels[$channel]);
+        return static::$instance->bgSave();
     }
 }

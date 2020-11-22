@@ -1,7 +1,6 @@
 <?php
 
 require "./vendor/autoload.php";
-require "./tests/UserConsumer.php";
 
 use Accolon\Redis\Redis;
 use PHPUnit\Framework\TestCase;
@@ -53,28 +52,6 @@ class RedisTest extends TestCase
 
         $this->assertTrue(true);
     }
-
-    public function testPubSub()
-    {
-        Redis::subscribe(["test"], function ($msg) {
-            echo $msg . PHP_EOL;
-        });
-
-        Redis::publish("test", "foobar");
-        Redis::publish("test", "oi");
-
-        $this->assertTrue(true);
-    }
-
-    /* public function testPubSub2()
-    {
-        $consumer = new UserConsumer();
-        $consumer->listen();
-
-        Redis::publish("user", "oi");
-
-        $this->assertTrue(true);
-    } */
 
     public function testDel()
     {
