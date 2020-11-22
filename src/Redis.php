@@ -35,10 +35,12 @@ class Redis
 
     public static function get($keys)
     {
-        return !is_array($keys) ? static::$instance->get($keys) : static::$instance->mGet($keys);
+        return !is_array($keys)
+                ? json_decode(static::$instance->get($keys))
+                : array_map(fn($data) => json_decode($data), static::$instance->mGet($keys));
     }
 
-    public static function set(string $key, string $value)
+    public static function set(string $key, $value)
     {
         return static::$instance->set($key, $value);
     }
